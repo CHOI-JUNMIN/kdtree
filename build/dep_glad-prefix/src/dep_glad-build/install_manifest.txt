@@ -1,0 +1,7 @@
+C:/Users/Public/kdtree/build/external/lib/libglad.a
+C:/Users/Public/kdtree/build/external/include/glad/glad.h
+C:/Users/Public/kdtree/build/external/include/KHR/khrplatform.h
+C:/Users/Public/kdtree/build/external/lib/cmake/glad/gladConfig.cmake
+C:/Users/Public/kdtree/build/external/lib/cmake/glad/gladConfigVersion.cmake
+C:/Users/Public/kdtree/build/external/lib/cmake/glad/gladTargets.cmake
+C:/Users/Public/kdtree/build/external/lib/cmake/glad/gladTargets-noconfig.cmake

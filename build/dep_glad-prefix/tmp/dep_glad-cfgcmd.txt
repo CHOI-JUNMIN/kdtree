@@ -1,0 +1,1 @@
+cmd='C:/Program Files/CMake/bin/cmake.exe;-DCMAKE_INSTALL_PREFIX=C:/Users/Public/kdtree/build/external;-DGLAD_INSTALL=ON;-DCMAKE_C_COMPILER=C:/mingw64/bin/gcc.exe;-DCMAKE_CXX_COMPILER=C:/mingw64/bin/g++.exe;-DCMAKE_MAKE_PROGRAM=C:/mingw64/bin/mingw32-make.exe;-GMinGW Makefiles;-S;<SOURCE_DIR><SOURCE_SUBDIR>;-B;<BINARY_DIR>'

@@ -1,0 +1,14 @@
+# Target labels
+ dep_glfw
+# Source files and their labels
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glfw
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glfw.rule
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glfw-complete.rule
+C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-build.rule
+C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-configure.rule
+C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-download.rule
+C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-install.rule
+C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-mkdir.rule
+C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-patch.rule
+C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-test.rule
+C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-update.rule

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/Public/kdtree/build/CMakeFiles/dep_glfw"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/CMakeFiles/dep_glfw.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/CMakeFiles/dep_glfw-complete.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-build.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-configure.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-download.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-install.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-patch.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-test.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glfw-prefix/src/dep_glfw-stamp/dep_glfw-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"dep_glfw"
+		],
+		"name" : "dep_glfw"
+	}
+}

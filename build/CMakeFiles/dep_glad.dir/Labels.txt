@@ -1,0 +1,14 @@
+# Target labels
+ dep_glad
+# Source files and their labels
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glad
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glad.rule
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glad-complete.rule
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-stamp/dep_glad-build.rule
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-stamp/dep_glad-configure.rule
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-stamp/dep_glad-download.rule
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-stamp/dep_glad-install.rule
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-stamp/dep_glad-mkdir.rule
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-stamp/dep_glad-patch.rule
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-stamp/dep_glad-test.rule
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-stamp/dep_glad-update.rule

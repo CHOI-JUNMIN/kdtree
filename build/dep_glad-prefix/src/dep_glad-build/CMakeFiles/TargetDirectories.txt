@@ -1,0 +1,8 @@
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-build/CMakeFiles/glad-generate-files.dir
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-build/CMakeFiles/glad.dir
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-build/CMakeFiles/edit_cache.dir
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-build/CMakeFiles/rebuild_cache.dir
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-build/CMakeFiles/list_install_components.dir
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-build/CMakeFiles/install.dir
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-build/CMakeFiles/install/local.dir
+C:/Users/Public/kdtree/build/dep_glad-prefix/src/dep_glad-build/CMakeFiles/install/strip.dir

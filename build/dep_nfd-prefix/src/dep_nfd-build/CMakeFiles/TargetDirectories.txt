@@ -1,0 +1,13 @@
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/CMakeFiles/edit_cache.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/CMakeFiles/rebuild_cache.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/CMakeFiles/list_install_components.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/CMakeFiles/install.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/CMakeFiles/install/local.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/CMakeFiles/install/strip.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/src/CMakeFiles/nfd.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/src/CMakeFiles/edit_cache.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/src/CMakeFiles/rebuild_cache.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/src/CMakeFiles/list_install_components.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/src/CMakeFiles/install.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/src/CMakeFiles/install/local.dir
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-build/src/CMakeFiles/install/strip.dir

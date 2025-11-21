@@ -1,0 +1,143 @@
+{
+    "version": "2.0.0",
+    "runner": "terminal",
+    "type": "shell",
+    "echoCommand": true,
+    "presentation": {
+        "reveal": "always"
+    },
+    "tasks": [
+        {
+            "label": "save and compile for C++",
+            "command": "g++",
+            "args": [
+                "${file}",
+                "-g",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "group": "build",
+            "problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"
+                ],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "save and compile for C",
+            "command": "gcc",
+            "args": [
+                "${file}",
+                "-g",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "group": "build",
+            "problemMatcher": {
+                "fileLocation": [
+                    "relative",
+                    "${workspaceRoot}"
+                ],
+                "pattern": {
+                    "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "message": 5
+                }
+            }
+        },
+        {
+            "label": "execute",
+            "command": "cmd",
+            "group": "test",
+            "args": [
+                "/C",
+                "${fileDirname}\\${fileBasenameNoExtension}"
+            ]
+        },
+       {
+        "label": "CMake Configure",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+            "-S",
+            "${workspaceFolder}",
+            "-B",
+            "${workspaceFolder}/build",
+            "-G",
+            "MinGW Makefiles",
+            "-DCMAKE_C_COMPILER=C:/mingw64/bin/gcc.exe",
+            "-DCMAKE_CXX_COMPILER=C:/mingw64/bin/g++.exe",
+            "-DCMAKE_MAKE_PROGRAM=C:/mingw64/bin/mingw32-make.exe"
+        ],
+        "problemMatcher": [],
+        "detail": "CMake 초기 설정"
+    },
+    {
+        "label": "CMake Build",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+            "--build",
+            "${workspaceFolder}/build",
+            "--config",
+            "Debug"
+        ],
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "problemMatcher": [
+            "$gcc"
+        ],
+        "dependsOn": [
+            "CMake Configure"
+        ],
+        "detail": "CMake 빌드 (자동으로 Configure 먼저 실행)"
+    },
+    {
+        "label": "Run Program",
+        "type": "shell",
+        "command": ".\\program.exe",
+        "options": {
+            "cwd": "${workspaceFolder}/build" // 작업 디렉토리 지정
+        },
+        "group": "test",
+        "problemMatcher": [],
+        "presentation": {
+            "reveal": "always",
+            "panel": "shared",
+            "focus": true
+        }
+    },
+    {
+        "label": "Build Only",
+        "type": "shell",
+        "command": "cmake",
+        "args": [
+            "--build",
+            "${workspaceFolder}/build",
+            "--config",
+            "Debug"
+        ],
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        },
+        "problemMatcher": [
+            "$gcc"
+        ]
+    }
+    ]
+}

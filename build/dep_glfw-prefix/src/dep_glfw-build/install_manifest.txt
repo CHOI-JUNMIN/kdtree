@@ -1,0 +1,8 @@
+C:/Users/Public/kdtree/build/external/lib/libglfw3.a
+C:/Users/Public/kdtree/build/external/include/GLFW/glfw3.h
+C:/Users/Public/kdtree/build/external/include/GLFW/glfw3native.h
+C:/Users/Public/kdtree/build/external/lib/cmake/glfw3/glfw3Config.cmake
+C:/Users/Public/kdtree/build/external/lib/cmake/glfw3/glfw3ConfigVersion.cmake
+C:/Users/Public/kdtree/build/external/lib/cmake/glfw3/glfw3Targets.cmake
+C:/Users/Public/kdtree/build/external/lib/cmake/glfw3/glfw3Targets-noconfig.cmake
+C:/Users/Public/kdtree/build/external/lib/pkgconfig/glfw3.pc

@@ -1,0 +1,8 @@
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glfw.dir
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glad.dir
+C:/Users/Public/kdtree/build/CMakeFiles/dep_glm.dir
+C:/Users/Public/kdtree/build/CMakeFiles/dep_nfd.dir
+C:/Users/Public/kdtree/build/CMakeFiles/imgui.dir
+C:/Users/Public/kdtree/build/CMakeFiles/program.dir
+C:/Users/Public/kdtree/build/CMakeFiles/edit_cache.dir
+C:/Users/Public/kdtree/build/CMakeFiles/rebuild_cache.dir

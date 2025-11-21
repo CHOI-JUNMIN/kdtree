@@ -1,0 +1,7 @@
+C:/Users/Public/kdtree/build/external/lib/libnfd.a
+C:/Users/Public/kdtree/build/external/include/nfd.h
+C:/Users/Public/kdtree/build/external/include/nfd.hpp
+C:/Users/Public/kdtree/build/external/include/nfd_sdl2.h
+C:/Users/Public/kdtree/build/external/include/nfd_glfw3.h
+C:/Users/Public/kdtree/build/external/lib/cmake/nfd/nfd-config.cmake
+C:/Users/Public/kdtree/build/external/lib/cmake/nfd/nfd-config-noconfig.cmake

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/Public/kdtree/build/CMakeFiles/dep_glm"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/CMakeFiles/dep_glm.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/CMakeFiles/dep_glm-complete.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glm-prefix/src/dep_glm-stamp/dep_glm-build.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glm-prefix/src/dep_glm-stamp/dep_glm-configure.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glm-prefix/src/dep_glm-stamp/dep_glm-download.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glm-prefix/src/dep_glm-stamp/dep_glm-install.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glm-prefix/src/dep_glm-stamp/dep_glm-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glm-prefix/src/dep_glm-stamp/dep_glm-patch.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glm-prefix/src/dep_glm-stamp/dep_glm-test.rule"
+		},
+		{
+			"file" : "C:/Users/Public/kdtree/build/dep_glm-prefix/src/dep_glm-stamp/dep_glm-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"dep_glm"
+		],
+		"name" : "dep_glm"
+	}
+}

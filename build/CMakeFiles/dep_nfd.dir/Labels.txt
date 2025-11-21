@@ -1,0 +1,14 @@
+# Target labels
+ dep_nfd
+# Source files and their labels
+C:/Users/Public/kdtree/build/CMakeFiles/dep_nfd
+C:/Users/Public/kdtree/build/CMakeFiles/dep_nfd.rule
+C:/Users/Public/kdtree/build/CMakeFiles/dep_nfd-complete.rule
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-stamp/dep_nfd-build.rule
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-stamp/dep_nfd-configure.rule
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-stamp/dep_nfd-download.rule
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-stamp/dep_nfd-install.rule
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-stamp/dep_nfd-mkdir.rule
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-stamp/dep_nfd-patch.rule
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-stamp/dep_nfd-test.rule
+C:/Users/Public/kdtree/build/dep_nfd-prefix/src/dep_nfd-stamp/dep_nfd-update.rule
