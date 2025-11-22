@@ -149,32 +149,3 @@ std::vector<int> RTree::find_radius(const Point3D &target, float radius)
     search_radius(root, target, radius, neighbors);
     return neighbors;
 }
-
-std::vector<MBRBox> RTree::get_all_mbrs() // RTree:: 제거
-{
-    std::vector<MBRBox> boxes; // RTree:: 제거
-    if (root)
-    {
-        collect_mbrs(root, 0, boxes);
-    }
-    return boxes;
-}
-
-void RTree::collect_mbrs(RNode *node, int level, std::vector<MBRBox> &boxes) // RTree:: 제거
-{
-    if (!node)
-        return;
-
-    MBRBox box; // RTree:: 제거
-    box.mbr = node->mbr;
-    box.level = level;
-    boxes.push_back(box);
-
-    if (!node->is_leaf)
-    {
-        for (RNode *child : node->children)
-        {
-            collect_mbrs(child, level + 1, boxes);
-        }
-    }
-}

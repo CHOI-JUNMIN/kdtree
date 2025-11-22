@@ -68,12 +68,6 @@ GLuint vao = 0;
 GLuint vbo = 0;
 GLuint shader_program = 0;
 
-bool show_mbr = false;
-int mbr_max_level = 10;
-GLuint mbr_vao = 0;
-GLuint mbr_vbo = 0;
-std::vector<glm::vec3> mbr_lines;
-
 // ========== 셰이더 소스 ==========
 const char *vertex_shader_source = R"(
 #version 330 core
@@ -485,108 +479,6 @@ void open_file_dialog()
     }
 }
 
-void generate_mbr_lines()
-{
-    mbr_lines.clear();
-
-    if (!rtree || search_method != METHOD_RTREE)
-        return;
-
-    auto mbr_boxes = rtree->get_all_mbrs();
-
-    for (const auto &box : mbr_boxes)
-    {
-        if (box.level > mbr_max_level)
-            continue;
-
-        const MBR &mbr = box.mbr;
-
-        // MBR의 8개 꼭짓점
-        glm::vec3 v0(mbr.min_x, mbr.min_y, mbr.min_z);
-        glm::vec3 v1(mbr.max_x, mbr.min_y, mbr.min_z);
-        glm::vec3 v2(mbr.max_x, mbr.max_y, mbr.min_z);
-        glm::vec3 v3(mbr.min_x, mbr.max_y, mbr.min_z);
-        glm::vec3 v4(mbr.min_x, mbr.min_y, mbr.max_z);
-        glm::vec3 v5(mbr.max_x, mbr.min_y, mbr.max_z);
-        glm::vec3 v6(mbr.max_x, mbr.max_y, mbr.max_z);
-        glm::vec3 v7(mbr.min_x, mbr.max_y, mbr.max_z);
-
-        // 12개 엣지
-        mbr_lines.push_back(v0);
-        mbr_lines.push_back(v1);
-        mbr_lines.push_back(v1);
-        mbr_lines.push_back(v2);
-        mbr_lines.push_back(v2);
-        mbr_lines.push_back(v3);
-        mbr_lines.push_back(v3);
-        mbr_lines.push_back(v0);
-
-        mbr_lines.push_back(v4);
-        mbr_lines.push_back(v5);
-        mbr_lines.push_back(v5);
-        mbr_lines.push_back(v6);
-        mbr_lines.push_back(v6);
-        mbr_lines.push_back(v7);
-        mbr_lines.push_back(v7);
-        mbr_lines.push_back(v4);
-
-        mbr_lines.push_back(v0);
-        mbr_lines.push_back(v4);
-        mbr_lines.push_back(v1);
-        mbr_lines.push_back(v5);
-        mbr_lines.push_back(v2);
-        mbr_lines.push_back(v6);
-        mbr_lines.push_back(v3);
-        mbr_lines.push_back(v7);
-    }
-
-    if (mbr_vao == 0)
-    {
-        glGenVertexArrays(1, &mbr_vao);
-        glGenBuffers(1, &mbr_vbo);
-    }
-
-    glBindVertexArray(mbr_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mbr_vbo);
-    glBufferData(GL_ARRAY_BUFFER, mbr_lines.size() * sizeof(glm::vec3),
-                 mbr_lines.data(), GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
-// render_mbr() 함수 추가
-void render_mbr()
-{
-    if (!show_mbr || mbr_lines.empty())
-        return;
-
-    glUseProgram(shader_program);
-
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f),
-                                            (float)window_width / window_height,
-                                            0.1f, 100.0f);
-
-    glUniformMatrix4fv(glGetUniformLocation(shader_program, "model"),
-                       1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"),
-                       1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(shader_program, "projection"),
-                       1, GL_FALSE, glm::value_ptr(projection));
-
-    glm::vec3 line_color(1.0f, 0.0f, 0.0f); // 빨강, 원하면 다른 색으로 변경 가능
-    glUniform3fv(glGetUniformLocation(shader_program, "color"), 1, glm::value_ptr(line_color));
-
-    glBindVertexArray(mbr_vao);
-    glDrawArrays(GL_LINES, 0, mbr_lines.size());
-    glBindVertexArray(0);
-}
-
 int main()
 {
     NFD_Init();
@@ -746,30 +638,6 @@ int main()
 
         ImGui::Separator();
 
-        if (search_method == METHOD_RTREE)
-        {
-            ImGui::Separator();
-
-            if (ImGui::Checkbox("Show R-tree MBR", &show_mbr))
-            {
-                if (show_mbr)
-                {
-                    generate_mbr_lines();
-                }
-            }
-
-            if (show_mbr)
-            {
-                ImGui::PushItemWidth(220);
-                if (ImGui::SliderInt("Max Level", &mbr_max_level, 0, 10))
-                {
-                    generate_mbr_lines();
-                }
-                ImGui::PopItemWidth();
-                ImGui::Text("Total MBR boxes: %d", (int)(mbr_lines.size() / 24));
-            }
-        }
-
         ImGui::PushItemWidth(250);
         ImGui::SliderFloat("Point Size", &point_size, 1.0f, 5.0f);
         ImGui::PopItemWidth();
@@ -793,7 +661,6 @@ int main()
         // 렌더링
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         render_point_cloud();
-        render_mbr();
 
         // ImGui 렌더링
         ImGui::Render();
@@ -809,8 +676,6 @@ int main()
 
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &mbr_vao); 
-    glDeleteBuffers(1, &mbr_vbo);
     glDeleteProgram(shader_program);
 
     ImGui_ImplOpenGL3_Shutdown();

@@ -85,14 +85,6 @@ struct RNode
     }
 };
 
-struct MBRBox
-{
-    MBR mbr;
-    int level; // 트리 깊이 (루트=0)
-};
-
-
-
 // R-tree 클래스
 class RTree
 {
@@ -106,17 +98,12 @@ private:
     void search_radius(RNode *node, const Point3D &target, float radius,
                        std::vector<int> &neighbors);
     void destroy_tree(RNode *node);
-    void collect_mbrs(RNode *node, int level, std::vector<MBRBox> &boxes);
 
 public:
     RTree(const std::vector<Point3D> &pts, int max_entries = 100);
     ~RTree();
 
     std::vector<int> find_radius(const Point3D &target, float radius);
-    std::vector<MBRBox> get_all_mbrs(); // 모든 MBR 수집
 };
-
-
-
 
 #endif // 
