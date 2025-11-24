@@ -3,6 +3,7 @@
 
 #include "kdtree.h"
 #include "rtree.h"
+#include "rtree_str.h"
 #include <vector>
 #include <string>
 
@@ -14,7 +15,6 @@ struct ClusterInfo
     float radius;
 };
 
-// KD-Tree 사용 DBSCAN
 std::vector<int> dbscan_clustering_kdtree(
     const std::vector<Point3D> &points,
     KDTree &tree,
@@ -28,6 +28,12 @@ std::vector<ClusterInfo> analyze_clusters(
 std::vector<int> dbscan_clustering_rtree(
     const std::vector<Point3D> &points,
     RTree &tree,
+    float radius,
+    int min_points);
+
+std::vector<int> dbscan_clustering_rtree_str(
+    const std::vector<Point3D> &points,
+    RTreeSTR &tree,
     float radius,
     int min_points);
 
