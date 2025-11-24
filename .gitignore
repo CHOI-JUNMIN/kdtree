@@ -1,0 +1,6 @@
+# model 폴더 내부의 모든 OBJ 파일을 Git 추적에서 제외
+model/*.obj
+# 함께 문제되었던 FBX 파일도 제외 (선택 사항)
+model/*.fbx
+
+build/
