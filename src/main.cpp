@@ -17,8 +17,6 @@
 
 #include "obj_loader.h"
 #include "kdtree.h"
-#include "rtree.h"
-#include "rtree_str.h"
 #include "clustering.h"
 
 // ========== 전역 변수 ==========
@@ -41,23 +39,12 @@ std::vector<Point3D> original_points;
 std::vector<Point3D> filtered_points;
 OBJMesh *mesh = nullptr;
 KDTree *tree = nullptr;
-RTree *rtree = nullptr;
-RTreeSTR *rtree_str = nullptr;
 std::string current_obj_name = "";
 
 // 파라미터
 float epsilon = 0.05f;
 int min_points = 10;
 float point_size = 2.0f;
-
-// 검색 방법 선택
-enum SearchMethod
-{
-    METHOD_KDTREE = 0,
-    METHOD_RTREE = 1,
-    METHOD_RTREE_STR = 2
-};
-SearchMethod search_method = METHOD_KDTREE;
 
 // 통계
 int total_points = 0;
@@ -197,27 +184,10 @@ void apply_dbscan()
     std::cout << "\nDBSCAN 실행 중..." << std::endl;
     std::cout << "Epsilon: " << epsilon << ", MinPts: " << min_points << std::endl;
 
-    const char *method_names[] = {"KD-Tree", "R*-tree", "STR R-tree"};
-    std::cout << "방식: " << method_names[search_method] << std::endl;
-
     // 시간 측정 시작
     auto start_time = std::chrono::high_resolution_clock::now();
 
-    std::vector<int> labels;
-
-    if (search_method == METHOD_KDTREE)
-    {
-        labels = dbscan_clustering_kdtree(original_points, *tree, epsilon, min_points);
-    }
-    else if (search_method == METHOD_RTREE) // ← 수정
-    {
-        labels = dbscan_clustering_rtree(original_points, *rtree, epsilon, min_points);
-    }
-    else // METHOD_RTREE_STR  ← 추가
-    {
-        labels = dbscan_clustering_rtree_str(original_points, *rtree_str, epsilon, min_points);
-    }
-
+    std::vector<int> labels = dbscan_clustering_kdtree(original_points, *tree, epsilon, min_points);
     current_labels = labels;
 
     // 시간 측정 종료
@@ -420,10 +390,6 @@ void load_new_obj(const char *filepath)
     {
         delete tree;
     }
-    if (rtree)
-    {
-        delete rtree;
-    }
     original_points.clear();
     filtered_points.clear();
 
@@ -447,14 +413,6 @@ void load_new_obj(const char *filepath)
     std::cout << "KD-Tree 구축 중..." << std::endl;
     tree = new KDTree(original_points);
     std::cout << "KD-Tree 구축 완료!" << std::endl;
-
-    std::cout << "R*-tree 구축 중..." << std::endl;
-    rtree = new RTree(original_points);
-    std::cout << "R*-tree 구축 완료!" << std::endl;
-
-    std::cout << "STR R-tree 구축 중..." << std::endl; 
-    rtree_str = new RTreeSTR(original_points);
-    std::cout << "STR R-tree 구축 완료!" << std::endl;
 
     // 5. 상태 초기화
     dbscan_applied = false;
@@ -528,15 +486,6 @@ int main()
     std::cout << "KD-Tree 구축 중..." << std::endl;
     tree = new KDTree(original_points);
     std::cout << "KD-Tree 구축 완료!" << std::endl;
-
-    // R*-tree 구축
-    std::cout << "R*-tree 구축 중..." << std::endl;
-    rtree = new RTree(original_points);
-    std::cout << "R*-tree 구축 완료!" << std::endl;
-
-    std::cout << "STR R-tree 구축 중..." << std::endl;
-    rtree_str = new RTreeSTR(original_points);
-    std::cout << "STR R-tree 구축 완료!" << std::endl;
 
     // GLFW 초기화
     if (!glfwInit())
@@ -645,16 +594,6 @@ int main()
 
         ImGui::Separator();
 
-        // 검색 방법 선택 (라디오 버튼)
-        ImGui::Text("Search Method:");
-        ImGui::RadioButton("KD-Tree", (int *)&search_method, METHOD_KDTREE);
-        ImGui::SameLine();
-        ImGui::RadioButton("R*-tree", (int *)&search_method, METHOD_RTREE);
-        ImGui::SameLine();
-        ImGui::RadioButton("STR R-tree", (int *)&search_method, METHOD_RTREE_STR);
-
-        ImGui::Separator();
-
         ImGui::PushItemWidth(250);
         ImGui::SliderFloat("Point Size", &point_size, 1.0f, 5.0f);
         ImGui::PopItemWidth();
@@ -688,8 +627,6 @@ int main()
 
     // 정리
     delete tree;
-    delete rtree;
-    delete rtree_str;
     free_mesh(mesh);
 
     glDeleteVertexArrays(1, &vao);

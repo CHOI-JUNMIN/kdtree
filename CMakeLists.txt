@@ -71,21 +71,6 @@ ExternalProject_Add(
 )
 set(DEP_LIST ${DEP_LIST} dep_glm)
 
-ExternalProject_Add(
-    dep_boost
-    URL "https://sourceforge.net/projects/boost/files/boost/1.87.0/boost_1_87_0.zip/download"
-    DOWNLOAD_NAME boost_1_87_0.zip
-    UPDATE_COMMAND ""
-    PATCH_COMMAND ""
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    TEST_COMMAND ""
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${PROJECT_BINARY_DIR}/dep_boost-prefix/src/dep_boost/boost
-        ${DEP_INSTALL_DIR}/include/boost
-)
-set(DEP_LIST ${DEP_LIST} dep_boost)
-
 # ========== Native File Dialog ==========
 ExternalProject_Add(
     dep_nfd
