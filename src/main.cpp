@@ -18,10 +18,14 @@
 #include "obj_loader.h"
 #include "kdtree.h"
 #include "clustering.h"
+#include "floor.h"
 
 // ========== 전역 변수 ==========
 int window_width = 1280;
 int window_height = 720;
+bool floor_removed = false;
+std::vector<Point3D> dbscan_result_points;
+float floor_removal_time = 0.0f;
 
 // 카메라 변수
 glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -57,6 +61,19 @@ std::vector<int> current_labels;
 GLuint vao = 0;
 GLuint vbo = 0;
 GLuint shader_program = 0;
+
+// 바닥 시각화용 전역 변수
+GLuint floor_vao = 0;
+GLuint floor_vbo = 0;
+std::vector<Point3D> floor_vis_points;
+bool show_floor_vis = false;
+float floor_ratio = 0.15f;
+
+//바닥 자르기
+float search_radius = 0.1f;
+float mid_start = 0.10f;
+float mid_end = 0.40f;
+int min_points_above = 30;
 
 // ========== 셰이더 소스 ==========
 const char *vertex_shader_source = R"(
@@ -151,8 +168,6 @@ void update_point_cloud_buffer(const std::vector<Point3D> &points)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
-
-// ========== 렌더링 ==========
 void render_point_cloud()
 {
     glUseProgram(shader_program);
@@ -167,13 +182,27 @@ void render_point_cloud()
     glUniformMatrix4fv(glGetUniformLocation(shader_program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniform1f(glGetUniformLocation(shader_program, "pointSize"), point_size);
 
+    // 1. 전체 포인트 (회색)
     glm::vec3 point_color(0.5f, 0.5f, 0.5f);
     glUniform3fv(glGetUniformLocation(shader_program, "color"), 1, glm::value_ptr(point_color));
 
     glBindVertexArray(vao);
-
     const std::vector<Point3D> &current_points = dbscan_applied ? filtered_points : original_points;
     glDrawArrays(GL_POINTS, 0, current_points.size());
+
+    // 2. 바닥 포인트 (빨간색) - 덮어 그리기
+    if (show_floor_vis && !floor_vis_points.empty())
+    {
+        glDisable(GL_DEPTH_TEST); // Z-fighting 방지
+
+        glm::vec3 floor_color(1.0f, 0.0f, 0.0f);
+        glUniform3fv(glGetUniformLocation(shader_program, "color"), 1, glm::value_ptr(floor_color));
+
+        glBindVertexArray(floor_vao);
+        glDrawArrays(GL_POINTS, 0, floor_vis_points.size());
+
+        glEnable(GL_DEPTH_TEST); // 다시 활성화
+    }
 
     glBindVertexArray(0);
 }
@@ -230,6 +259,7 @@ void apply_dbscan()
 
     // OpenGL 버퍼 업데이트
     update_point_cloud_buffer(filtered_points);
+    dbscan_result_points = filtered_points;
 
     std::cout << "완료! 제거된 점: " << removed_points << std::endl;
 }
@@ -362,6 +392,8 @@ void reset_to_original()
     dbscan_applied = false;
     removed_points = 0;
     last_execution_time = 0.0f;
+    show_floor_vis = false;
+    floor_vis_points.clear();
     update_point_cloud_buffer(original_points);
 }
 
@@ -409,7 +441,7 @@ void load_new_obj(const char *filepath)
     total_points = original_points.size();
     std::cout << "총 " << total_points << "개 포인트 로드" << std::endl;
 
-    // 4. KD-Tree & R*-tree 재구축
+    // 4. KD-Tree
     std::cout << "KD-Tree 구축 중..." << std::endl;
     tree = new KDTree(original_points);
     std::cout << "KD-Tree 구축 완료!" << std::endl;
@@ -418,6 +450,8 @@ void load_new_obj(const char *filepath)
     dbscan_applied = false;
     removed_points = 0;
     last_execution_time = 0.0f;
+    show_floor_vis = false;
+    floor_vis_points.clear();
 
     // 6. OpenGL 버퍼 업데이트
     update_point_cloud_buffer(original_points);
@@ -448,12 +482,85 @@ void open_file_dialog()
     }
 }
 
+void apply_floor_removal()
+{
+    if (!dbscan_applied)
+    {
+        std::cout << "먼저 DBSCAN을 실행하세요." << std::endl;
+        return;
+    }
+
+    std::cout << "\n=== 바닥 제거 시작 ===" << std::endl;
+
+    int before_count = dbscan_result_points.size();
+
+    // 시간 측정 시작
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // 수직 기둥 보호 방식으로 바닥 제거
+    filtered_points = remove_floor_with_column_protection(
+        dbscan_result_points,
+        floor_ratio,
+        search_radius,
+        mid_start,
+        mid_end,
+        min_points_above);
+
+    // 시간 측정 끝
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // 표시 업데이트
+    total_points = before_count;                            // DBSCAN 후 점 개수
+    removed_points = before_count - filtered_points.size(); // Floor 제거된 점
+    last_execution_time = std::chrono::duration<float>(end - start).count();
+
+    // OpenGL 버퍼 업데이트
+    update_point_cloud_buffer(filtered_points);
+
+    floor_removed = true;
+    show_floor_vis = false;
+
+    std::cout << "=== 바닥 제거 완료 ===" << std::endl;
+}
+
+void visualize_floor()
+{
+    if (!dbscan_applied)
+    {
+        std::cout << "먼저 DBSCAN을 실행하세요." << std::endl;
+        return;
+    }
+
+    // 바닥 점들만 추출 (빨간색용)
+    floor_vis_points = get_floor_points(dbscan_result_points, floor_ratio);
+
+    // floor_vao 업데이트
+    if (floor_vao == 0)
+    {
+        glGenVertexArrays(1, &floor_vao);
+        glGenBuffers(1, &floor_vbo);
+    }
+
+    glBindVertexArray(floor_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, floor_vbo);
+    glBufferData(GL_ARRAY_BUFFER, floor_vis_points.size() * sizeof(Point3D),
+                floor_vis_points.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Point3D), (void *)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // 원본 vao는 그대로 유지 (건드리지 않음!)
+
+    show_floor_vis = true;
+}
+
 int main()
 {
     NFD_Init();
 
     // OBJ 파일 로드
-    std::string obj_path = "../model/transforms_base.obj";
+    std::string obj_path = "../model/d314.obj";
 
     // 파일 이름 자동 추출
     size_t last_slash = obj_path.find_last_of("/\\");
@@ -550,7 +657,7 @@ int main()
         ImGui::NewFrame();
 
         // GUI 패널
-        ImGui::Begin("DBSCAN Controls");
+        ImGui::Begin("DBSCAN Controls", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
         ImGui::Separator();
 
@@ -564,6 +671,13 @@ int main()
         if (ImGui::Button("DBSCAN"))
         {
             apply_dbscan();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Remove Floor"))
+        {
+            apply_floor_removal();
         }
 
         ImGui::SameLine();
@@ -607,6 +721,34 @@ int main()
 
         ImGui::Separator();
 
+        ImGui::PushItemWidth(250);
+        ImGui::Text("Floor Visualization:");
+        ImGui::SliderFloat("Floor Ratio", &floor_ratio, 0.05f, 0.30f, "%.2f");
+
+        if (ImGui::Button("Show Floor"))
+        {
+            visualize_floor();
+        }
+
+        if (show_floor_vis)
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Hide Floor"))
+            {
+                show_floor_vis = false;
+            }
+            ImGui::Text("Floor Points: %d", (int)floor_vis_points.size());
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Column Protection Settings:");
+        ImGui::SliderFloat("Search Radius", &search_radius, 0.01f, 1.0f, "%.2f");
+        ImGui::SliderFloat("Mid Start", &mid_start, 0.05f, 0.20f, "%.2f");
+        ImGui::SliderFloat("Mid End", &mid_end, 0.20f, 0.60f, "%.2f");
+        ImGui::SliderInt("Min Points", &min_points_above, 5, 500);
+
+        ImGui::Separator();
+
         ImGui::Text("Controls (Right-click required):");
         ImGui::BulletText("Drag: Rotate Camera");
         ImGui::BulletText("W/A/S/D: Move");
@@ -632,6 +774,12 @@ int main()
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     glDeleteProgram(shader_program);
+
+    if (floor_vao != 0)
+    {
+        glDeleteVertexArrays(1, &floor_vao);
+        glDeleteBuffers(1, &floor_vbo);
+    }
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
