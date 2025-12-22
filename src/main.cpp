@@ -4,6 +4,7 @@
 #include <cmath>
 #include <chrono>
 #include <nfd.h>
+#include <set>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -25,6 +26,7 @@ int window_width = 1280;
 int window_height = 720;
 bool floor_removed = false;
 std::vector<Point3D> dbscan_result_points;
+std::vector<int> filtered_indices;
 float floor_removal_time = 0.0f;
 
 // 카메라 변수
@@ -213,13 +215,11 @@ void apply_dbscan()
     std::cout << "\nDBSCAN 실행 중..." << std::endl;
     std::cout << "Epsilon: " << epsilon << ", MinPts: " << min_points << std::endl;
 
-    // 시간 측정 시작
     auto start_time = std::chrono::high_resolution_clock::now();
 
     std::vector<int> labels = dbscan_clustering_kdtree(original_points, *tree, epsilon, min_points);
     current_labels = labels;
 
-    // 시간 측정 종료
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
     last_execution_time = duration.count() / 1000.0f;
@@ -244,20 +244,22 @@ void apply_dbscan()
         }
     }
 
-    // 필터링된 포인트 생성
+    // 필터링된 포인트 생성 + 인덱스 저장
     filtered_points.clear();
+    filtered_indices.clear();
+
     for (size_t i = 0; i < labels.size(); i++)
     {
         if (labels[i] == largest_cluster)
         {
             filtered_points.push_back(original_points[i]);
+            filtered_indices.push_back(i); // 인덱스 저장
         }
     }
 
     removed_points = original_points.size() - filtered_points.size();
     dbscan_applied = true;
 
-    // OpenGL 버퍼 업데이트
     update_point_cloud_buffer(filtered_points);
     dbscan_result_points = filtered_points;
 
@@ -273,38 +275,48 @@ void save_result()
         return;
     }
 
-    // 가장 큰 클러스터 찾기
-    std::map<int, int> cluster_sizes;
-    for (int label : current_labels)
+    // 원본 파일명에서 확장자 제거
+    std::string base_name = current_obj_name;
+    size_t dot_pos = base_name.find_last_of('.');
+    if (dot_pos != std::string::npos)
     {
-        cluster_sizes[label]++;
+        base_name = base_name.substr(0, dot_pos);
     }
 
-    int largest_cluster = -1;
-    int largest_size = 0;
-    for (auto &[id, size] : cluster_sizes)
+    std::string filename;
+
+    if (floor_removed)
     {
-        if (id != -1 && size > largest_size)
+        // 바닥 제거까지 완료된 경우
+        std::cout << "\n바닥 제거 결과 저장 중..." << std::endl;
+        filename = "../model/" + base_name + "_dbscan_floor.obj";
+
+        // filtered_indices를 사용해서 is_noise 배열 생성 (빠름!)
+        std::vector<bool> is_noise(original_points.size(), true);
+        for (int idx : filtered_indices)
         {
-            largest_cluster = id;
-            largest_size = size;
+            is_noise[idx] = false;
         }
-    }
 
-    // labels로 직접 is_noise 생성
-    std::vector<bool> is_noise(original_points.size(), false);
-    for (size_t i = 0; i < current_labels.size(); i++)
+        save_filtered_mesh(mesh, is_noise, filename);
+        std::cout << "저장 완료: " << filename << std::endl;
+    }
+    else
     {
-        if (current_labels[i] != largest_cluster)
-        {
-            is_noise[i] = true;
-        }
-    }
+        // DBSCAN만 적용된 경우
+        std::cout << "\nDBSCAN 결과 저장 중..." << std::endl;
 
-    // 저장
-    char filename[100];
-    sprintf(filename, "../model/dbscan_e%.3f_m%d.obj", epsilon, min_points);
-    save_filtered_mesh(mesh, is_noise, filename);
+        // filtered_indices를 사용해서 is_noise 배열 생성
+        std::vector<bool> is_noise(original_points.size(), true);
+        for (int idx : filtered_indices)
+        {
+            is_noise[idx] = false;
+        }
+
+        filename = "../model/" + base_name + "_dbscan.obj";
+        save_filtered_mesh(mesh, is_noise, filename);
+        std::cout << "저장 완료: " << filename << std::endl;
+    }
 }
 
 // ========== 키 입력 처리 ==========
@@ -394,6 +406,8 @@ void reset_to_original()
     last_execution_time = 0.0f;
     show_floor_vis = false;
     floor_vis_points.clear();
+    floor_removed = false;
+    filtered_indices.clear(); // 인덱스도 초기화
     update_point_cloud_buffer(original_points);
 }
 
@@ -494,11 +508,10 @@ void apply_floor_removal()
 
     int before_count = dbscan_result_points.size();
 
-    // 시간 측정 시작
     auto start = std::chrono::high_resolution_clock::now();
 
     // 수직 기둥 보호 방식으로 바닥 제거
-    filtered_points = remove_floor_with_column_protection(
+    FloorRemovalResult floor_result = remove_floor_with_column_protection(
         dbscan_result_points,
         floor_ratio,
         search_radius,
@@ -506,15 +519,36 @@ void apply_floor_removal()
         mid_end,
         min_points_above);
 
-    // 시간 측정 끝
     auto end = std::chrono::high_resolution_clock::now();
 
+    // filtered_points 업데이트
+    filtered_points = floor_result.filtered;
+
+    // ===== 빠른 인덱스 업데이트 (O(n)) =====
+    // 1. 제거된 인덱스를 set으로 변환 (O(n log n))
+    std::set<int> removed_set(floor_result.removed_indices.begin(),
+                              floor_result.removed_indices.end());
+
+    // 2. set으로 빠르게 체크 (O(log n) 검색)
+    std::vector<int> new_filtered_indices;
+    new_filtered_indices.reserve(filtered_indices.size()); // 메모리 미리 할당
+
+    for (size_t i = 0; i < filtered_indices.size(); i++)
+    {
+        // O(log n) 검색
+        if (removed_set.find(i) == removed_set.end())
+        {
+            new_filtered_indices.push_back(filtered_indices[i]);
+        }
+    }
+    filtered_indices = new_filtered_indices;
+    // ===== 끝 =====
+
     // 표시 업데이트
-    total_points = before_count;                            // DBSCAN 후 점 개수
-    removed_points = before_count - filtered_points.size(); // Floor 제거된 점
+    total_points = before_count;
+    removed_points = before_count - filtered_points.size();
     last_execution_time = std::chrono::duration<float>(end - start).count();
 
-    // OpenGL 버퍼 업데이트
     update_point_cloud_buffer(filtered_points);
 
     floor_removed = true;
@@ -741,7 +775,7 @@ int main()
         }
 
         ImGui::Separator();
-        ImGui::Text("Column Protection Settings:");
+        ImGui::Text("Floor Removal Parameters:");
         ImGui::SliderFloat("Search Radius", &search_radius, 0.01f, 1.0f, "%.2f");
         ImGui::SliderFloat("Mid Start", &mid_start, 0.05f, 0.20f, "%.2f");
         ImGui::SliderFloat("Mid End", &mid_end, 0.20f, 0.60f, "%.2f");

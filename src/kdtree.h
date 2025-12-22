@@ -4,15 +4,6 @@
 #include <vector>
 #include "point3d.h"
 
-// 3D 점
-// struct Point3D
-// {
-//     float x, y, z;
-
-//     Point3D() : x(0), y(0), z(0) {}
-//     Point3D(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
-// };
-
 // KD-Tree 노드
 struct KDNode
 {

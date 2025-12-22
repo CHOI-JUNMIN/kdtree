@@ -14,7 +14,6 @@ std::vector<Point3D> get_floor_points(
         return std::vector<Point3D>();
     }
 
-
     // 범위 계산
     float y_min = points[0].y, y_max = points[0].y;
     float x_min = points[0].x, x_max = points[0].x;
@@ -56,7 +55,7 @@ std::vector<Point3D> get_floor_points(
     return floor_points;
 }
 
-std::vector<Point3D> remove_floor_with_column_protection(
+FloorRemovalResult remove_floor_with_column_protection(
     const std::vector<Point3D> &points,
     float floor_ratio,
     float search_radius,
@@ -64,9 +63,11 @@ std::vector<Point3D> remove_floor_with_column_protection(
     float mid_end,
     int min_points_above)
 {
+    FloorRemovalResult result;
+
     if (points.empty())
     {
-        return std::vector<Point3D>();
+        return result;
     }
 
     std::cout << "\n=== 수직 기둥 보호 바닥 제거 ===" << std::endl;
@@ -105,7 +106,6 @@ std::vector<Point3D> remove_floor_with_column_protection(
     KDTree mid_tree(mid_points);
     std::cout << "  중간 높이 KD-Tree 생성 완료" << std::endl;
 
-    std::vector<Point3D> filtered;
     int floor_count = 0;
     int removed_count = 0;
 
@@ -116,7 +116,7 @@ std::vector<Point3D> remove_floor_with_column_protection(
         // 바닥 영역이 아니면 무조건 유지
         if (p.y > floor_y_max)
         {
-            filtered.push_back(p);
+            result.filtered.push_back(p);
             continue;
         }
 
@@ -144,10 +144,11 @@ std::vector<Point3D> remove_floor_with_column_protection(
         // 중간 높이에 점이 충분히 많으면 유지 (기둥 아래)
         if (points_in_mid >= min_points_above)
         {
-            filtered.push_back(p);
+            result.filtered.push_back(p);
         }
         else
         {
+            result.removed_indices.push_back(i); // 제거된 인덱스 기록
             removed_count++;
         }
 
@@ -161,7 +162,7 @@ std::vector<Point3D> remove_floor_with_column_protection(
     std::cout << "=== 완료 ===" << std::endl;
     std::cout << "  바닥 영역 점: " << floor_count << std::endl;
     std::cout << "  제거된 점 (노이즈): " << removed_count << std::endl;
-    std::cout << "  남은 점: " << filtered.size() << std::endl;
+    std::cout << "  남은 점: " << result.filtered.size() << std::endl;
 
-    return filtered;
+    return result;
 }

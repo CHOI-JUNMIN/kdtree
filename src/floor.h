@@ -1,5 +1,5 @@
-#ifndef RANSAC_H
-#define RANSAC_H
+#ifndef FLOOR_H
+#define FLOOR_H
 
 #include <vector>
 #include <cmath>
@@ -30,17 +30,24 @@ struct Plane
     }
 };
 
+// 바닥 제거 결과 구조체
+struct FloorRemovalResult
+{
+    std::vector<Point3D> filtered;    // 유지된 점들
+    std::vector<int> removed_indices; // 제거된 점들의 인덱스
+};
+
 // 바닥 영역 점들만 추출 (시각화용)
 std::vector<Point3D> get_floor_points(
     const std::vector<Point3D> &points,
     float floor_ratio = 0.15f);
 
-std::vector<Point3D> remove_floor_with_column_protection(
+FloorRemovalResult remove_floor_with_column_protection(
     const std::vector<Point3D> &points,
     float floor_ratio = 0.15f,
     float search_radius = 0.1f,
     float mid_start = 0.10f,
     float mid_end = 0.40f,
     int min_points_above = 30);
-    
+
 #endif // RANSAC_H
