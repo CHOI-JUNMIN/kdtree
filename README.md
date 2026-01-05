@@ -1,16 +1,37 @@
-kdtree 기반의 DBSCAN으로 노이즈 제거와 원통형 영역 기반의 노이즈제거에 초점을 둠
+![opengl](https://github.com/user-attachments/assets/53ee8363-74d6-4947-bd13-e6ee5229ff38)
 
-obj파일에 경우 model 폴더를 만들어서 그 안에 넣으면 됨
+## 포인트 클라우드 노이즈 제거 도구
 
+C++ OpenGL기반의 프로그램으로 kdtree기반의 DBSCAN 노이즈 제거와 원통형 영역 기반의 노이즈제거에 초점을 둠
 
+노이즈 제거를 위한 obj파일에 경우 폴더를 만들어서(ex: model) 그 안에 넣으면 됨
 
-## 노이즈 제거 툴 
+## 요구사항 (window)
 
-<img width="1282" height="752" alt="8" src="https://github.com/user-attachments/assets/7d8c3f32-199a-4a6b-88ca-256e6da2e215" />
+* CMake 3.25 이상
+* C++17 호환 컴파일러
+* OpenGL 3.3 이상
 
-
-마우스 우클릭을 누른 상태로 wasd를 누르면 카메라 이동이 가능하며 마우스로 뷰를 조절
+## 주요 기능
 
 * OBJ 로드 및 저장
 * 노이즈 제거를 위한 DBSCAN
 * point cloud 크기 조절
+* 바닥영역 설정 파라미터
+* 원통형 영역 기반의 노이즈제거 파라미터
+* 실시간 3D 뷰어
+
+## 주요 파라미터
+
+### DBSCAN
+
+- **Epsilon** : 이웃 탐색 반경
+- **MinPts** : 최소 이웃 수 (자신 포함)
+
+### 바닥 제거
+
+- **Floor Ratio** : 바닥 영역 범위 설정
+- **Search Radius** : XZ 평면 탐색 반경
+- **Mid Start** : 중간 높이 시작 지점
+- **Mid End** : 중간 높이 끝 지점
+- **Min Points ** : 중간 높이 영역 최소 점 개수
