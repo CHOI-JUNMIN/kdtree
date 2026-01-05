@@ -12,5 +12,4 @@ obj파일에 경우 model 폴더를 만들어서 그 안에 넣으면 됨
 
 * OBJ 로드 및 저장
 * 노이즈 제거를 위한 DBSCAN
-* KD-tree, R*-tree 비교
 * point cloud 크기 조절
