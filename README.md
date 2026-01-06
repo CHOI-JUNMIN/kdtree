@@ -25,10 +25,18 @@ C++ OpenGL기반의 프로그램으로 kdtree기반의 DBSCAN 노이즈 제거�
 
 ### DBSCAN
 
+![dbscan](https://github.com/user-attachments/assets/af0d8234-a303-4a28-96fc-6a85e260fb28)
+
 - **Epsilon** : 이웃 탐색 반경
 - **MinPts** : 최소 이웃 수 (자신 포함)
 
+
 ### 바닥 제거
+
+![f123](https://github.com/user-attachments/assets/58b8849c-1e41-43d0-9b28-ddde69f6d774)
+
+
+
 
 - **Floor Ratio** : 바닥 영역 범위 설정
 - **Search Radius** : XZ 평면 탐색 반경
